@@ -26,7 +26,6 @@ public class ConsReader{
                 cons = Integer.parseInt(new JsonParser().parse(reader).getAsJsonObject().get(avatarName).getAsJsonObject().get(element).toString());
             }
             else {
-                Grasscutter.getLogger().info(avatarName);
                 cons = Integer.parseInt(new JsonParser().parse(reader).getAsJsonObject().get(avatarName).toString());
             }
             consId = cons + constellation;
