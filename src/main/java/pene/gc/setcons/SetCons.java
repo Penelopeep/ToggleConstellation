@@ -37,12 +37,4 @@ public final class SetCons extends Plugin {
         // Log a plugin status message.
         this.getLogger().info("The SetConstellations plugin has been enabled.");
     }
-
-    /**
-     * This method is called when the plugin is disabled.
-     */
-    @Override public void onDisable() {
-        // Log a plugin status message.
-        this.getLogger().info("The SetConstellations plugin has been disabled.");
-    }
 }
