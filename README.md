@@ -25,3 +25,4 @@ https://user-images.githubusercontent.com/81880849/182039219-eeee80e3-b3ae-4343-
 
 - Grasscutter team for making PluginTemplate and Grasscutter itself
 - Me for everything else
+- hartie95#8966 for VersionSupportHelper which I totally didn't stolen from SwitchElement plugin
