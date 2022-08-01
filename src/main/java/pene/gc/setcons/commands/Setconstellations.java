@@ -13,6 +13,7 @@ import pene.gc.setcons.VersionSupportHelper;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 
@@ -29,20 +30,29 @@ public final class Setconstellations implements CommandHandler {
             }
             return;
         }
-        int constellation = Integer.parseInt(args.get(0));
-        if (constellation > 6 || constellation < 1){
-            if (sender != null) {
-                CommandHandler.sendMessage(targetPlayer, "Invalid constellation");
+        int constellation;
+        try {
+            constellation = Integer.parseInt(args.get(0));
+            if (constellation > 6 || constellation < 1) {
+                if (sender != null) {
+                    CommandHandler.sendMessage(targetPlayer, "Invalid constellation");
+                } else {
+                    Grasscutter.getLogger().info("Invalid constellation");
+                }
+                return;
             }
-            else {
-                Grasscutter.getLogger().info("Invalid constellation");
+        }catch (NumberFormatException e){
+            if (sender != null) {
+                CommandHandler.sendMessage(targetPlayer, "Use ONLY constellation number");
+            } else {
+                Grasscutter.getLogger().info("Use ONLY constellation number");
             }
             return;
         }
+
         EntityAvatar entity = targetPlayer.getTeamManager().getCurrentAvatarEntity();
         Avatar avatar = entity.getAvatar();
-        String avatarName = avatar.getAvatarData().getName();
-        int consId = ConsReader.reader(targetPlayer, avatarName, constellation);
+        int consId = ConsReader.reader(targetPlayer, constellation);
         Set<Integer> list = avatar.getTalentIdList();
         boolean isAlready = false;
         for (int cons : list){
@@ -51,9 +61,9 @@ public final class Setconstellations implements CommandHandler {
                 break;
             }
         }
-        int highestconst = 0;
+        int highestconst;
         try{
-            String messageSuccess = "";
+            String messageSuccess;
             if (!isAlready){
                 avatar.getTalentIdList().add(consId);
                 list.add(consId);
@@ -80,6 +90,9 @@ public final class Setconstellations implements CommandHandler {
             }
             catch (NullPointerException e){
                 e.printStackTrace();
+            }
+            catch (NoSuchElementException f){
+                Grasscutter.getLogger().info("Unknown error, probably caused by removing constellation");
             }
             if (sender != null) {
                 CommandHandler.sendMessage(targetPlayer, messageSuccess);
