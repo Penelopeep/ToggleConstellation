@@ -2,11 +2,19 @@
 ### Allows you to toggle constellation with simple command
 
 
-INSERT DEMO HERE
+
+
+https://user-images.githubusercontent.com/81880849/182039219-eeee80e3-b3ae-4343-ba66-d9f3bd3bcbe7.mp4
+
+
 
 
 ## Usage:
 ##### **/setconstellation** or **/sc** or **/setcons** [constellation number **1-6**]
+
+Also don't use it on >1.2.2-dev versions of Grasscutter for two reasons:
+1. Since version 1.2.3-dev Grasscutter now supports this command (thanks to [juuyokka](https://github.com/juuyokka))
+2. It just won't work, using help causes error etc.
 
 ## FAQ
 
@@ -21,3 +29,4 @@ INSERT DEMO HERE
 
 - Grasscutter team for making PluginTemplate and Grasscutter itself
 - Me for everything else
+- hartie95#8966 for VersionSupportHelper which I totally didn't stolen from SwitchElement plugin
