@@ -12,6 +12,10 @@ https://user-images.githubusercontent.com/81880849/182039219-eeee80e3-b3ae-4343-
 ## Usage:
 ##### **/setconstellation** or **/sc** or **/setcons** [constellation number **1-6**]
 
+Also don't use it on >1.2.2-dev versions of Grasscutter for two reasons:
+1. Since version 1.2.3-dev Grasscutter now supports this command (thanks to [juuyokka](https://github.com/juuyokka))
+2. It just won't work, using help causes error etc.
+
 ## FAQ
 
 1. How to install plugin?
