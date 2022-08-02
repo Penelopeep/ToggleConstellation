@@ -29,5 +29,6 @@ Also don't use it on >1.2.2-dev versions of Grasscutter for two reasons:
 
 - Grasscutter team for making PluginTemplate and Grasscutter itself
 - Me for everything else
-- hartie95#8966 for VersionSupportHelper which I totally didn't stolen from SwitchElement plugin
-- juuyokka .#9097 for letting me know that I'm dumb and I could use getTalents() in first place
+- hartie95#8966 for VersionSupportHelper which I totally didn't steal from SwitchElement plugin
+- juuyokka .#9097 for letting me know that I'm dumb, and I could use getTalents() in first place
+- Lurius#2569 for fixing **all** function, I send entire logic to him btw, **but** he coded it and reformatted entire code soo... <3
