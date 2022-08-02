@@ -18,38 +18,85 @@ import java.util.Set;
 
 
 @Command(label = "setconstellations",aliases = {"sc", "setcons"},
-        usage = "setconstellations [0-6]")
+        usage = "setconstellations [0-6/all]")
 public final class Setconstellations implements CommandHandler {
     @Override public void execute(Player sender, Player targetPlayer, List<String> args) {
         if (args.size() < 1){
             if (sender != null) {
-                CommandHandler.sendMessage(targetPlayer, "/setconstellation or /sc or /setcons [1-6]");
+                CommandHandler.sendMessage(targetPlayer, "/setconstellation or /sc or /setcons [1-6] / all");
             }
             else {
-                Grasscutter.getLogger().info("setconstellation or sc or setcons [1-6]");
+                Grasscutter.getLogger().info("setconstellation or sc or setcons [1-6] / all");
             }
             return;
         }
         int constellation;
-        try {
-            constellation = Integer.parseInt(args.get(0));
-            if (constellation > 6 || constellation < 1) {
+        String messageSuccess;
+        if (args.get(0).equals("all")){
+            messageSuccess = this.AllConstellation(targetPlayer);
+        }else{ try {
+                constellation = Integer.parseInt(args.get(0));
+                if (constellation > 6 || constellation < 1) {
+                    if (sender != null) {
+                        CommandHandler.sendMessage(targetPlayer, "Invalid number/All command");
+                    } else {
+                        Grasscutter.getLogger().info("Invalid number/All command");
+                    }
+                    return;
+                }
+                messageSuccess = this.Setaconstellation(targetPlayer, constellation);
+            }catch (NumberFormatException e){
                 if (sender != null) {
-                    CommandHandler.sendMessage(targetPlayer, "Invalid constellation");
+                    CommandHandler.sendMessage(targetPlayer, "Use ONLY constellation number");
                 } else {
-                    Grasscutter.getLogger().info("Invalid constellation");
+                    Grasscutter.getLogger().info("Use ONLY constellation number");
                 }
                 return;
             }
-        }catch (NumberFormatException e){
+        }
+        int scene = targetPlayer.getSceneId();
+        try {
+            Position targetPlayerPos = (Position) VersionSupportHelper.getPositionMethod().invoke(targetPlayer);
+            targetPlayer.getWorld().transferPlayerToScene(targetPlayer, 1, targetPlayerPos);
+            targetPlayer.getWorld().transferPlayerToScene(targetPlayer, scene, targetPlayerPos);
+            targetPlayer.getScene().broadcastPacket(new PacketSceneEntityAppearNotify(targetPlayer));
+        }
+        catch (NoSuchElementException f){
             if (sender != null) {
-                CommandHandler.sendMessage(targetPlayer, "Use ONLY constellation number");
+                CommandHandler.sendMessage(targetPlayer, "Unknown error, probably caused by removing constellation");
             } else {
-                Grasscutter.getLogger().info("Use ONLY constellation number");
+                Grasscutter.getLogger().info("Unknown error, probably caused by removing constellation");
             }
             return;
         }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        if (sender != null) {
+            CommandHandler.sendMessage(targetPlayer, messageSuccess);
+        }
+        else {
+            Grasscutter.getLogger().info(messageSuccess);
+        }
+    }
 
+    private String AllConstellation(Player player) {
+        for (Avatar avatar : player.getAvatars()){
+            List<Integer> consSet = avatar.getSkillDepot().getTalents();
+            avatar.getTalentIdList().clear();
+            avatar.setCoreProudSkillLevel(0);
+            for (int consLoop : consSet){
+                avatar.getTalentIdList().add(consLoop);
+            }
+            avatar.setCoreProudSkillLevel(6);
+            avatar.recalcConstellations();
+            avatar.recalcStats();
+            avatar.save();
+        }
+        return "All const activated, Relog-in to see effect";
+    }
+
+    private String Setaconstellation(Player targetPlayer, int constellation){
         EntityAvatar entity = targetPlayer.getTeamManager().getCurrentAvatarEntity();
         Avatar avatar = entity.getAvatar();
         int consId = ConsReader.reader(targetPlayer, constellation);
@@ -77,31 +124,13 @@ public final class Setconstellations implements CommandHandler {
                 highestconst = Collections.max(newlist)%10;
                 avatar.setCoreProudSkillLevel(highestconst);
                 messageSuccess = String.format("Successfully deactivated C%s, but some constellation may require relog", constellation);
-
             }
             avatar.recalcStats();
             avatar.save();
-            int scene = targetPlayer.getSceneId();
-            try {
-                Position targetPlayerPos = (Position) VersionSupportHelper.getPositionMethod().invoke(targetPlayer);
-                targetPlayer.getWorld().transferPlayerToScene(targetPlayer, 1, targetPlayerPos);
-                targetPlayer.getWorld().transferPlayerToScene(targetPlayer, scene, targetPlayerPos);
-                targetPlayer.getScene().broadcastPacket(new PacketSceneEntityAppearNotify(targetPlayer));
-            }
-            catch (NullPointerException e){
-                e.printStackTrace();
-            }
-            catch (NoSuchElementException f){
-                Grasscutter.getLogger().info("Unknown error, probably caused by removing constellation");
-            }
-            if (sender != null) {
-                CommandHandler.sendMessage(targetPlayer, messageSuccess);
-            }
-            else {
-                Grasscutter.getLogger().info(messageSuccess);
-            }
+            return messageSuccess;
         }catch (Exception e){
             e.printStackTrace();
         }
+        return "nothing";
     }
 }
