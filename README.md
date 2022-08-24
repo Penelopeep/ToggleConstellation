@@ -1,3 +1,5 @@
+#Since 3.0 is out there's no reason why anyone should use this
+
 # SetConstellation plugin
 ### Allows you to toggle constellation with simple command
 
