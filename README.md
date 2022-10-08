@@ -1,6 +1,4 @@
-#Since 3.0 is out there's no reason why anyone should use this
-
-# SetConstellation plugin
+# ToggleConstellation plugin
 ### Allows you to toggle constellation with simple command
 
 
@@ -12,12 +10,9 @@ https://user-images.githubusercontent.com/81880849/182039219-eeee80e3-b3ae-4343-
 
 
 ## Usage:
-##### **/setconstellation** or **/sc** or **/setcons** [constellation number **1-6**]
-##### Alternatively you can use **/sc all** to add every available constellation
+##### **/toggleconstellation**, **/tc**, **/togcons** or **/togglecons** [constellation number **1-6**]
+##### Alternatively you can use **/tc all** to add every available constellation
 
-Also don't use it on >1.2.2-dev versions of Grasscutter for two reasons:
-1. Since version 1.2.3-dev Grasscutter now supports this command (thanks to [juuyokka](https://github.com/juuyokka))
-2. It just won't work, using help causes error etc.
 
 ## FAQ
 
@@ -35,3 +30,6 @@ Also don't use it on >1.2.2-dev versions of Grasscutter for two reasons:
 - hartie95#8966 for VersionSupportHelper which I totally didn't steal from SwitchElement plugin
 - juuyokka .#9097 for letting me know that I'm dumb, and I could use getTalents() in first place
 - Lurius#2569 for fixing **all** function, I send entire logic to him btw, **but** he coded it and reformatted entire code soo... <3
+
+
+### Plugin made for 1.3.1-dev version of Grasscutter

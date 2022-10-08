@@ -1,4 +1,4 @@
-package pene.gc.setcons.commands;
+package pene.gc.ToggleCons.commands;
 
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.command.Command;
@@ -6,35 +6,35 @@ import emu.grasscutter.command.CommandHandler;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.server.packet.send.PacketAvatarDataNotify;
+import emu.grasscutter.server.packet.send.PacketAvatarUnlockTalentNotify;
 import emu.grasscutter.server.packet.send.PacketSceneEntityAppearNotify;
+import emu.grasscutter.server.packet.send.PacketUnlockAvatarTalentRsp;
 import emu.grasscutter.utils.Position;
-import pene.gc.setcons.ConsReader;
-import pene.gc.setcons.VersionSupportHelper;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 
 
-@Command(label = "setconstellations",aliases = {"sc", "setcons"},
+@Command(label = "toggleconstellation",aliases = {"tc", "togcons, togglecons"},
         usage = "setconstellations [0-6/all]")
-public final class Setconstellations implements CommandHandler {
+public final class Toggleconstellations implements CommandHandler {
     @Override public void execute(Player sender, Player targetPlayer, List<String> args) {
         if (args.size() < 1){
             if (sender != null) {
-                CommandHandler.sendMessage(targetPlayer, "/setconstellation or /sc or /setcons [1-6] / all");
+                CommandHandler.sendMessage(targetPlayer, "/toggleconstellation, /tc, /togglecons or /togcons [1-6] / all");
             }
             else {
-                Grasscutter.getLogger().info("setconstellation or sc or setcons [1-6] / all");
+                Grasscutter.getLogger().info("toggleconstellation, tc, togglecons or togcons  [1-6] / all");
             }
             return;
         }
         int constellation;
         String messageSuccess;
         if (args.get(0).equals("all")){
-            messageSuccess = this.AllConstellation(targetPlayer);
-        }else{ try {
+            messageSuccess = AllConstellation(targetPlayer);
+        } else {
+            try {
                 constellation = Integer.parseInt(args.get(0));
                 if (constellation > 6 || constellation < 1) {
                     if (sender != null) {
@@ -44,8 +44,8 @@ public final class Setconstellations implements CommandHandler {
                     }
                     return;
                 }
-                messageSuccess = this.Setaconstellation(targetPlayer, constellation);
-            }catch (NumberFormatException e){
+                messageSuccess = this.Toggleaconstellation(targetPlayer, constellation);
+            } catch (NumberFormatException e) {
                 if (sender != null) {
                     CommandHandler.sendMessage(targetPlayer, "Use ONLY constellation number");
                 } else {
@@ -56,7 +56,7 @@ public final class Setconstellations implements CommandHandler {
         }
         int scene = targetPlayer.getSceneId();
         try {
-            Position targetPlayerPos = (Position) VersionSupportHelper.getPositionMethod().invoke(targetPlayer);
+            Position targetPlayerPos = targetPlayer.getPosition();
             targetPlayer.getWorld().transferPlayerToScene(targetPlayer, 1, targetPlayerPos);
             targetPlayer.getWorld().transferPlayerToScene(targetPlayer, scene, targetPlayerPos);
             targetPlayer.getScene().broadcastPacket(new PacketSceneEntityAppearNotify(targetPlayer));
@@ -80,27 +80,35 @@ public final class Setconstellations implements CommandHandler {
         }
     }
 
-    private String AllConstellation(Player player) {
-        for (Avatar avatar : player.getAvatars()){
-            List<Integer> consSet = avatar.getSkillDepot().getTalents();
-            avatar.getTalentIdList().clear();
-            avatar.setCoreProudSkillLevel(0);
-            for (int consLoop : consSet){
-                avatar.getTalentIdList().add(consLoop);
-            }
-            avatar.setCoreProudSkillLevel(6);
-            avatar.recalcConstellations();
-            avatar.recalcStats();
-            avatar.save();
+    private int getConstellation(Avatar avatar, int contellation){
+        int talentId = ((avatar.getAvatarId() % 10000000) * 10) + contellation;
+        if (avatar.getAvatarId() == 10000006) {
+            // Lisa is special in that her talentId starts with 4 instead of 6.
+            talentId = 40 + contellation;
         }
-        return "All const activated, Relog-in to see effect";
+        return talentId;
+    }
+    private String AllConstellation(Player player) {
+        Avatar avatar = player.getTeamManager().getCurrentAvatarEntity().getAvatar();
+        int cons = getConstellation(avatar, 0);
+        List <Integer>list = avatar.getSkillDepot().getTalents();
+        list.clear();
+        for (int i=1; i<7; i++){
+            list.add(cons + i);
+            player.sendPacket(new PacketAvatarUnlockTalentNotify(avatar, cons + i));
+            player.sendPacket(new PacketUnlockAvatarTalentRsp(avatar, cons + i));
+        }
+        avatar.recalcConstellations();
+        avatar.recalcStats();
+        avatar.save();
+        return "All const activated, but some constellations may require relog";
     }
 
-    private String Setaconstellation(Player targetPlayer, int constellation){
+    private String Toggleaconstellation(Player targetPlayer, int constellation){
         EntityAvatar entity = targetPlayer.getTeamManager().getCurrentAvatarEntity();
         Avatar avatar = entity.getAvatar();
-        int consId = ConsReader.reader(targetPlayer, constellation);
-        Set<Integer> list = avatar.getTalentIdList();
+        int consId = getConstellation(avatar, constellation);
+        List<Integer> list = avatar.getSkillDepot().getTalents();
         boolean isAlready = false;
         for (int cons : list){
             if (cons == consId) {
@@ -108,22 +116,24 @@ public final class Setconstellations implements CommandHandler {
                 break;
             }
         }
-        int highestconst;
         try{
             String messageSuccess;
             if (!isAlready){
-                avatar.getTalentIdList().add(consId);
                 list.add(consId);
-                highestconst = Collections.max(list)%10;
-                avatar.setCoreProudSkillLevel(highestconst);
-                messageSuccess = String.format("Successfully activated C%s, but some constellation may require relog",constellation);
+                targetPlayer.sendPacket(new PacketAvatarUnlockTalentNotify(avatar, consId));
+                targetPlayer.sendPacket(new PacketUnlockAvatarTalentRsp(avatar, consId));
+                messageSuccess = String.format("Successfully activated C%s, but some constellations may require relog",constellation);
             }
             else{
-                avatar.getTalentIdList().remove(consId);
-                Set<Integer> newlist = avatar.getTalentIdList();
-                highestconst = Collections.max(newlist)%10;
-                avatar.setCoreProudSkillLevel(highestconst);
-                messageSuccess = String.format("Successfully deactivated C%s, but some constellation may require relog", constellation);
+                //This second loop might be unnecessary, but I'm not sure for to include it in earlier one
+                for (int i=0; i<list.size(); i++){
+                    if(list.get(i) == consId){
+                        //noinspection SuspiciousListRemoveInLoop
+                        list.remove(i);
+                    }
+                }
+                targetPlayer.sendPacket(new PacketAvatarDataNotify(targetPlayer)); //Maybe?
+                messageSuccess = String.format("Successfully deactivated C%s, but some constellations may require relog", constellation);
             }
             avatar.recalcStats();
             avatar.save();

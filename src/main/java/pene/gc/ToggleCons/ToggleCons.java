@@ -1,24 +1,24 @@
-package pene.gc.setcons;
+package pene.gc.ToggleCons;
 
 import emu.grasscutter.plugin.Plugin;
-import pene.gc.setcons.commands.Setconstellations;
+import pene.gc.ToggleCons.commands.Toggleconstellations;
 
 /**
  * The Grasscutter plugin template.
  * This is the main class for the plugin.
  */
-public final class SetCons extends Plugin {
+public final class ToggleCons extends Plugin {
     /* Turn the plugin into a singleton. */
-    private static SetCons instance;
+    private static ToggleCons instance;
 
     /**
      * Gets the plugin instance.
      * @return A plugin singleton.
      */
-    public static SetCons getInstance() {
+    public static ToggleCons getInstance() {
         return instance;
     }
-    
+
     /**
      * This method is called immediately after the plugin is first loaded into system memory.
      */
@@ -32,9 +32,9 @@ public final class SetCons extends Plugin {
     @Override public void onEnable() {
         
         // Register commands.
-        this.getHandle().registerCommand(new Setconstellations());
+        this.getHandle().registerCommand(new Toggleconstellations());
 
         // Log a plugin status message.
-        this.getLogger().info("The SetConstellations plugin has been enabled.");
+        this.getLogger().info("The ToggleConstellations plugin has been enabled.");
     }
 }

@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>pene.gc.setcons</groupId> <!-- Replace with your groupId -->
-    <artifactId>SetConstellation</artifactId> <!-- Replace with your plugin name. -->
-    <version>2137</version> <!-- The template's version corresponds to the latest API version. -->
+    <groupId>pene.gc.ToggleCons</groupId> <!-- Replace with your groupId -->
+    <artifactId>ToggleConstellation</artifactId> <!-- Replace with your plugin name. -->
+    <version>2</version> <!-- The template's version corresponds to the latest API version. -->
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>xyz.grasscutters</groupId> <!-- Versions below 1.0.3-dev are on 'tech.xigam' -->
             <artifactId>grasscutter</artifactId>
-            <version>1.2.2-dev</version> <!-- Replace with the latest version of the API. -->
+            <version>1.3.1-dev</version> <!-- Replace with the latest version of the API. -->
         </dependency>
     </dependencies>
 </project>

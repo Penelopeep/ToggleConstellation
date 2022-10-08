@@ -1,8 +1,8 @@
 {
-  "name": "SetConstellations",
+  "name": "ToggleConstellations",
   "description": "Plugin which allows you to set constellations manually",
   "version": "1",
   "authors": [ "Penelopeep" ],
   
-  "mainClass": "pene.gc.setcons.SetCons"
+  "mainClass": "pene.gc.ToggleCons.ToggleCons"
 }
