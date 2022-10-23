@@ -15,7 +15,7 @@ Note: demo uses old command but functionality is still the same
 ##### Alternatively you can use **/tc all** to add every available constellation
 
 
-## FAQ
+## FAQ:
 
 1. How to install plugin?
     - Add the newest jar file from [here](https://github.com/Penelopeep/ToggleConstellation/releases), and put it in **GrasscutterFolder/Plugins** (make one if you don't have)
