@@ -19,9 +19,14 @@ Note: demo uses old command but functionality is still the same
 
 1. How to install plugin?
     - Add the newest jar file from [here](https://github.com/Penelopeep/ToggleConstellation/releases), and put it in **GrasscutterFolder/Plugins** (make one if you don't have)
-2. I found a bug, where to report it?
+2. My C0 character stays at C0 after `/tc`!!!
+    - It's weird bug which occurs on characters that never unlocked that/any constellation. If you read carefully plugin says:
+      > Successfully deactivated C{number}, but some constellations may require relog
+      
+      Just use `/tc` 2nd time.
+3. I found a bug, where to report it?
    - Let me know on discord **<a href="https://discord.com/users/276265598508466176">Penelopeep#7963</a>** or make a pull request with fix
-3. Your error handling sucks
+4. Your error handling sucks
     - You're right, if you know how to make proper error handling then make pull request or dm me on discord **Penelopeep#7963**
 
 ## Credits:
@@ -33,4 +38,4 @@ Note: demo uses old command but functionality is still the same
 - **Lurius#2569** for fixing **all** function
 
 
-### Plugin made for 1.3.1-dev version of Grasscutter
+### Plugin made for 1.4.1 version of Grasscutter
