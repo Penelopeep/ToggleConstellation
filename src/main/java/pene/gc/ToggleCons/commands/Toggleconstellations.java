@@ -3,10 +3,11 @@ package pene.gc.ToggleCons.commands;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.command.Command;
 import emu.grasscutter.command.CommandHandler;
+import emu.grasscutter.data.GameData;
+import emu.grasscutter.data.excels.AvatarTalentData;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.player.Player;
-import emu.grasscutter.server.packet.send.PacketAvatarDataNotify;
 import emu.grasscutter.server.packet.send.PacketAvatarUnlockTalentNotify;
 import emu.grasscutter.server.packet.send.PacketSceneEntityAppearNotify;
 import emu.grasscutter.server.packet.send.PacketUnlockAvatarTalentRsp;
@@ -44,7 +45,7 @@ public final class Toggleconstellations implements CommandHandler {
                     }
                     return;
                 }
-                messageSuccess = this.Toggleaconstellation(targetPlayer, constellation);
+                messageSuccess = this.Toggleconstellation(targetPlayer, constellation);
             } catch (NumberFormatException e) {
                 if (sender != null) {
                     CommandHandler.sendMessage(targetPlayer, "Use ONLY constellation number");
@@ -80,11 +81,11 @@ public final class Toggleconstellations implements CommandHandler {
         }
     }
 
-    private int getConstellation(Avatar avatar, int contellation){
-        int talentId = ((avatar.getAvatarId() % 10000000) * 10) + contellation;
+    private int getConstellation(Avatar avatar, int constellation){
+        int talentId = ((avatar.getAvatarId() % 10000000) * 10) + constellation;
         if (avatar.getAvatarId() == 10000006) {
             // Lisa is special in that her talentId starts with 4 instead of 6.
-            talentId = 40 + contellation;
+            talentId = 40 + constellation;
         }
         return talentId;
     }
@@ -104,43 +105,40 @@ public final class Toggleconstellations implements CommandHandler {
         return "All const activated, but some constellations may require relog";
     }
 
-    private String Toggleaconstellation(Player targetPlayer, int constellation){
+    private String Toggleconstellation(Player targetPlayer, int constellation){
         EntityAvatar entity = targetPlayer.getTeamManager().getCurrentAvatarEntity();
         Avatar avatar = entity.getAvatar();
         int consId = getConstellation(avatar, constellation);
         List<Integer> list = avatar.getSkillDepot().getTalents();
+        System.out.println(list);
         boolean isAlready = false;
         for (int cons : list){
             if (cons == consId) {
                 isAlready = true;
+                System.out.println(cons);
                 break;
             }
         }
         try{
             String messageSuccess;
             if (!isAlready){
-                list.add(consId);
-                targetPlayer.sendPacket(new PacketAvatarUnlockTalentNotify(avatar, consId));
-                targetPlayer.sendPacket(new PacketUnlockAvatarTalentRsp(avatar, consId));
+                list.add(consId); //Proud lvl jest prawdopodobnie ustawiony na 0 dlatego wszystkie konstellacje są wpisane ale żadna nie jest odblokowana.
+                AvatarTalentData talentData = GameData.getAvatarTalentDataMap().get(consId);
+                avatar.unlockConstellation(consId, true);
+                avatar.calcConstellation(GameData.getOpenConfigEntries().get(talentData.getOpenConfig()), true);
                 messageSuccess = String.format("Successfully activated C%s, but some constellations may require relog",constellation);
             }
             else{
-                //This second loop might be unnecessary, but I'm not sure for to include it in earlier one
-                for (int i=0; i<list.size(); i++){
-                    if(list.get(i) == consId){
-                        //noinspection SuspiciousListRemoveInLoop
-                        list.remove(i);
-                    }
-                }
-                targetPlayer.sendPacket(new PacketAvatarDataNotify(targetPlayer)); //Maybe?
+                list.remove((Integer) consId);
                 messageSuccess = String.format("Successfully deactivated C%s, but some constellations may require relog", constellation);
             }
-            avatar.recalcStats();
+            avatar.recalcConstellations();
+            avatar.recalcStats(true);
             avatar.save();
             return messageSuccess;
         }catch (Exception e){
             e.printStackTrace();
         }
-        return "nothing";
+        return "something is really fucked up if you see this";
     }
 }
