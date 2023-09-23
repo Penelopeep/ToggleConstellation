@@ -3,6 +3,7 @@
   "description": "Plugin which allows you to set constellations manually",
   "version": "1",
   "authors": [ "Penelopeep" ],
+  "api": 2,
   
   "mainClass": "pene.gc.ToggleCons.ToggleCons"
 }

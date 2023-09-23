@@ -1,17 +1,16 @@
 package pene.gc.ToggleCons.commands;
 
+import emu.grasscutter.GameConstants;
 import emu.grasscutter.Grasscutter;
 import emu.grasscutter.command.Command;
 import emu.grasscutter.command.CommandHandler;
-import emu.grasscutter.data.GameData;
-import emu.grasscutter.data.excels.AvatarTalentData;
 import emu.grasscutter.game.avatar.Avatar;
 import emu.grasscutter.game.entity.EntityAvatar;
 import emu.grasscutter.game.player.Player;
+import emu.grasscutter.game.world.Position;
 import emu.grasscutter.server.packet.send.PacketAvatarUnlockTalentNotify;
 import emu.grasscutter.server.packet.send.PacketSceneEntityAppearNotify;
 import emu.grasscutter.server.packet.send.PacketUnlockAvatarTalentRsp;
-import emu.grasscutter.utils.Position;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -87,6 +86,12 @@ public final class Toggleconstellations implements CommandHandler {
             // Lisa is special in that her talentId starts with 4 instead of 6.
             talentId = 40 + constellation;
         }
+        if (avatar.getAvatarId() == GameConstants.MAIN_CHARACTER_MALE || avatar.getAvatarId() == GameConstants.MAIN_CHARACTER_FEMALE){
+            //mc is trash
+            for (int cons : avatar.getTalentIdList()){
+                return (cons - cons%10) + constellation;
+            }
+        }
         return talentId;
     }
     private String AllConstellation(Player player) {
@@ -110,22 +115,23 @@ public final class Toggleconstellations implements CommandHandler {
         Avatar avatar = entity.getAvatar();
         int consId = getConstellation(avatar, constellation);
         List<Integer> list = avatar.getSkillDepot().getTalents();
-        System.out.println(list);
+        System.out.println(consId);
         boolean isAlready = false;
         for (int cons : list){
             if (cons == consId) {
                 isAlready = true;
-                System.out.println(cons);
                 break;
             }
         }
         try{
             String messageSuccess;
             if (!isAlready){
-                list.add(consId); //Proud lvl jest prawdopodobnie ustawiony na 0 dlatego wszystkie konstellacje są wpisane ale żadna nie jest odblokowana.
-                AvatarTalentData talentData = GameData.getAvatarTalentDataMap().get(consId);
+                list.add(consId);
                 avatar.unlockConstellation(consId, true);
-                avatar.calcConstellation(GameData.getOpenConfigEntries().get(talentData.getOpenConfig()), true);
+                //AvatarTalentData talentData = GameData.getAvatarTalentDataMap().get(consId);
+                //What the fuck is this shit \/
+                //avatar.calcConstellation(GameData.getOpenConfigEntries().get(talentData.getOpenConfig()), true);
+                targetPlayer.sendPacket(new PacketAvatarUnlockTalentNotify(avatar, consId));
                 messageSuccess = String.format("Successfully activated C%s, but some constellations may require relog",constellation);
             }
             else{
